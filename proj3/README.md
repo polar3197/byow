@@ -33,11 +33,11 @@ RoomTree {
   
 Room {  
   private width, height  
-  private coordinates
-  private TETile map[][]
-  private neighbors[]
-  
-  public Room(Random random) # generate random room dimensions
+  private coordinates  
+  private TETile map[][]  
+  private neighbors[]  
+    
+  public Room(Random random) # generate random room dimensions  
 }  
   
 ## Algorithms
