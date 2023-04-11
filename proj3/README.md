@@ -38,6 +38,7 @@ Room {
   private neighbors[]  
     
   public Room(Random random) # generate random room dimensions  
+  public bool detectOverlap(TETile[][] map)
 }  
   
 ## Algorithms
