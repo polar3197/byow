@@ -12,7 +12,21 @@ public class Room {
     private int height;
     private int x;
     private int y;
-    private ArrayList<Pair<Integer, Integer>> potentialDoors;
+    private ArrayList<Pair<Integer, Integer>> potentialDoors; // potential hallway entry points in (x, y) order
+
+    /*
+    grid rotated 90 degrees clockwise such that
+    (0, 0) corresponds to top left of the grid and
+    (width - 1, height - 1) corresponds to bottom right of the grid
+
+    Example 4(width)x5(height) grid:
+    #####
+    #...#
+    #...#
+    #####
+    (0, 0) is top left corner
+    (3, 4) is bottom right corner
+     */
     private TETile roomGrid[][];
 
     public Room(Random random) {
@@ -20,10 +34,10 @@ public class Room {
         y = Integer.MAX_VALUE;
         width = random.nextInt(3, 11);
         height = random.nextInt(3, 11);
-        roomGrid = new TETile[this.height][this.width];
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
-                if (i > 0 && i < this.height - 1 && j > 0 && j < this.width - 1) {
+        roomGrid = new TETile[this.width][this.height];
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                if (i > 0 && i < this.width - 1 && j > 0 && j < this.height - 1) {
                     roomGrid[i][j] = Tileset.FLOOR;
                 } else {
                     roomGrid[i][j] = Tileset.WALL;
