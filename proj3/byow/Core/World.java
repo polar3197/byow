@@ -14,8 +14,11 @@ public class World {
     int worldHeight;
     int FIVE = 5;
 
-    public void createWorld(Long seed) {
+    public void createWorld(Long seed, int wrldWidth, int wrldHeight) {
         Random random = new Random(seed);
+        int maxRooms = ((wrldWidth * wrldHeight) / 100) * (2/3);
+        int minRooms = ((wrldWidth * wrldHeight) / 100) * (1/3);
+        int NUM_ROOMS = random.nextInt(minRooms, maxRooms);
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
             Room rm = null;
@@ -24,7 +27,7 @@ public class World {
             }
             addRoom2World(rm);
         }
-
+        this.roomTree = new RoomTree();
 
 
         return;
@@ -69,6 +72,7 @@ public class World {
                 this.world[i][j] = newRm.getTile(i - x - 1, j - y - 1);
             }
         }
+        this.rooms.add(newRm);
     }
                 
 
