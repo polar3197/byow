@@ -76,6 +76,8 @@ public class World {
         for (int i = 0; i < rooms.size() - 1; i++) {
             connectRooms(i, i + 1, random);
         }
+        removeWalls();
+        return;
     }
 
     /*** does a preliminary check of the proposed room before creating it
@@ -89,6 +91,33 @@ public class World {
         for (int i = x - 1; i < x + width; i++) {
             for (int j = y - 1; j < y + height; j++) {
                 if (world[i][j].equals(Tileset.FLOOR)) return true;
+            }
+        }
+        return false;
+    }
+
+    private void removeWalls() {
+        for (int k = 0; k < worldHeight; k++) {
+            world[worldWidth - 1][k] = Tileset.NOTHING;
+            world[0][k] = Tileset.NOTHING;
+        }
+        for (int i = 0; i < worldWidth; i++) {
+            world[i][worldHeight - 1] = Tileset.NOTHING;
+            world[i][0] = Tileset.NOTHING;
+            for (int j = 1; j < worldHeight - 1; j++) {
+                if (world[i][j].equals(Tileset.WALL) && !neighborHasFloor(i, j)) {
+                    world[i][j] = Tileset.NOTHING;
+                }
+            }
+        }
+    }
+
+    private boolean neighborHasFloor(int x, int y) {
+        for (int i = x - 1; i < x + 2; i++) {
+            for (int j = y - 1; j < y + 2; j++) {
+                if (world[i][j] == Tileset.FLOOR) {
+                    return true;
+                }
             }
         }
         return false;
