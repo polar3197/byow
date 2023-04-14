@@ -12,7 +12,8 @@ public class Room {
     private int height;
     private int x;
     private int y;
-    private ArrayList<Pair<Integer, Integer>> potentialDoors;
+
+    private ArrayList<Pair<Integer, Integer>> potentialDoors; // potential hallway entry points in (x, y) order
     private TETile roomGrid[][];
 
     public TETile getTile(int x, int y) {
@@ -29,19 +30,33 @@ public class Room {
     public int getHeight() {
         return height;
     }
+    
     public int getwidth() {
         return width;
     }
 
+    /*
+    grid rotated 90 degrees clockwise such that
+    (0, 0) corresponds to top left of the grid and
+    (width - 1, height - 1) corresponds to bottom right of the grid
+
+    Example 4(width)x5(height) grid:
+    #####
+    #...#
+    #...#
+    #####
+    (0, 0) is top left corner
+    (3, 4) is bottom right corner
+     */
     public Room(Random random, int newWidth, int newHeight) {
         x = Integer.MAX_VALUE;
         y = Integer.MAX_VALUE;
-        width = newWidth; // .nextInt(3, maxWidth);
-        height = newHeight; // random.nextInt(3, maxHeight);
-        roomGrid = new TETile[this.height][this.width];
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
-                if (i > 0 && i < this.height - 1 && j > 0 && j < this.width - 1) {
+        width = newWidth;
+        height = newHeight;
+        roomGrid = new TETile[this.width][this.height];
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                if (i > 0 && i < this.width - 1 && j > 0 && j < this.height - 1) {
                     roomGrid[i][j] = Tileset.FLOOR;
                 } else {
                     roomGrid[i][j] = Tileset.WALL;
@@ -86,7 +101,6 @@ public class Room {
     /**
      * Detects if this Room with its current coordinates overlaps with
      * other Rooms in a given map
-     * <p>
      * Precondition: this Room's coordinates are set
      *
      * @param world 2D TETile array representing the world
@@ -100,4 +114,3 @@ public class Room {
         }
         return false;
     }
-}
