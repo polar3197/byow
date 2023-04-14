@@ -54,7 +54,10 @@ public class World {
             addRoom2World(rm);
         }
         this.roomTree = new RoomTree(rooms.size());
-
+        while (!roomTree.fullyConnected()) {
+            Pair<Integer, Integer> roomPair = roomTree.pickDisjointRooms(this.random);
+            connectRooms(roomPair.a, roomPair.b, this.random);
+        }
         return;
     }
 

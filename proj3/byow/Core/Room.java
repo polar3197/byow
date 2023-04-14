@@ -89,7 +89,7 @@ public class Room {
                 x1 = random.nextInt(startPoints.get(i).a + 1, endPoints.get(i).a);
                 y1 = startPoints.get(i).b;
             }
-            potentialDoors.add(new Pair<>(x1, y1));
+            potentialDoors.add(new Pair<>(x1 + x, y1 + y));
         }
     }
 
