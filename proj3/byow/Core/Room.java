@@ -19,6 +19,7 @@ public class Room {
     public TETile getTile(int x, int y) {
         return roomGrid[x][y];
     }
+
     public int getX() {
         return x;
     }
@@ -30,7 +31,7 @@ public class Room {
     public int getHeight() {
         return height;
     }
-    
+
     public int getwidth() {
         return width;
     }
@@ -97,20 +98,4 @@ public class Room {
     public ArrayList<Pair<Integer, Integer>> getPotentialDoors() {
         return potentialDoors;
     }
-
-    /**
-     * Detects if this Room with its current coordinates overlaps with
-     * other Rooms in a given map
-     * Precondition: this Room's coordinates are set
-     *
-     * @param world 2D TETile array representing the world
-     * @return true if an overlap is detected, false otherwise
-     */
-    public boolean detectOverlap(TETile world[][]) {
-        for (int i = x; i < x + this.width - 1; i++) {
-            for (int j = y; j < y + this.height - 1; j++) {
-                if (world[i][j].equals(Tileset.FLOOR)) return true;
-            }
-        }
-        return false;
-    }
+}

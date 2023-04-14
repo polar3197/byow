@@ -1,5 +1,6 @@
 package byow.Core;
 
+
 public class RoomTree {
     private int[] parent;
     private int[] rank; // sizes of trees
@@ -36,7 +37,7 @@ public class RoomTree {
     }
 
     // Unites the set that includes x and the set that includes y
-    void union(int x, int y) {
+    public void union(int x, int y) {
         // Find representatives of two sets
         int xRoot = find(x), yRoot = find(y);
         if (xRoot == yRoot) {
