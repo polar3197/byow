@@ -27,7 +27,7 @@ public class World {
             }
             addRoom2World(rm);
         }
-        this.roomTree = new RoomTree();
+        this.roomTree = new RoomTree(NUM_ROOMS);
 
 
         return;
@@ -74,15 +74,22 @@ public class World {
         }
         this.rooms.add(newRm);
     }
-                
 
-    public void connectRooms(Room a, Room b, Random random) {
+    /**
+     * Connect two rooms with a hallway and update
+     * the RoomTree
+     *
+     * @param a index of first room
+     * @param b index of second room
+     * @param random Random object
+     */
+    public void connectRooms(int a, int b, Random random) {
         // find closest potential doors
         Pair<Integer, Integer> minDoorA = null;
         Pair<Integer, Integer> minDoorB = null;
         double minDist = Double.MAX_VALUE;
-        for (Pair<Integer, Integer> doorA : a.getPotentialDoors()) {
-            for (Pair<Integer, Integer> doorB : b.getPotentialDoors()) {
+        for (Pair<Integer, Integer> doorA : rooms.get(a).getPotentialDoors()) {
+            for (Pair<Integer, Integer> doorB : rooms.get(b).getPotentialDoors()) {
                 double curDist = Math.sqrt((doorA.a - doorB.a)*(doorA.a - doorB.a)
                         + (doorA.b - doorB.b)*(doorA.b - doorB.b));
                 if (curDist < minDist) {
@@ -99,6 +106,7 @@ public class World {
         Pair<Integer, Integer> joint = joints[random.nextInt(2)];
         setArea(minDoorA.a, minDoorA.b, joint.a, joint.b, Tileset.FLOOR);
         setArea(minDoorB.a, minDoorB.b, joint.a, joint.b, Tileset.FLOOR);
+        roomTree.union(a, b);
     }
 
     /**
