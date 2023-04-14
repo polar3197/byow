@@ -12,7 +12,28 @@ public class Room {
     private int height;
     private int x;
     private int y;
+
     private ArrayList<Pair<Integer, Integer>> potentialDoors; // potential hallway entry points in (x, y) order
+    private TETile roomGrid[][];
+
+    public TETile getTile(int x, int y) {
+        return roomGrid[x][y];
+    }
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    public int getwidth() {
+        return width;
+    }
 
     /*
     grid rotated 90 degrees clockwise such that
@@ -27,13 +48,11 @@ public class Room {
     (0, 0) is top left corner
     (3, 4) is bottom right corner
      */
-    private TETile roomGrid[][];
-
-    public Room(Random random) {
+    public Room(Random random, int newWidth, int newHeight) {
         x = Integer.MAX_VALUE;
         y = Integer.MAX_VALUE;
-        width = random.nextInt(3, 11);
-        height = random.nextInt(3, 11);
+        width = newWidth;
+        height = newHeight;
         roomGrid = new TETile[this.width][this.height];
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
@@ -82,7 +101,6 @@ public class Room {
     /**
      * Detects if this Room with its current coordinates overlaps with
      * other Rooms in a given map
-     *
      * Precondition: this Room's coordinates are set
      *
      * @param world 2D TETile array representing the world
@@ -96,52 +114,3 @@ public class Room {
         }
         return false;
     }
-//    public Room(int width, int height, int x, int y) {
-//        this.width = width;
-//        this.height = height;
-//        this.x = x;
-//        this.y = y;
-//        neighbors = new ArrayList<>();
-//        ArrayList<Integer> left_wall = new ArrayList<>(List.of(this.x, this.y, this.x, this.y + this.height - 1));
-//        ArrayList<Integer> top_wall = new ArrayList<>(List.of(this.x, this.y + this.height - 1, this.x + this.width - 1, this.y + this.height - 1));
-//        ArrayList<Integer> right_wall = new ArrayList<>(List.of(this.x + this.width - 1, this.y, this.x + this.width - 1, this.y + this.height - 1));
-//        ArrayList<Integer> bot_wall = new ArrayList<>(List.of(this.x, this.y, this.x + this.width - 1, this.y));
-//        this.walls.add(left_wall);
-//        this.walls.add(top_wall);
-//        this.walls.add(right_wall);
-//        this.walls.add(bot_wall);
-//    }
-//
-//    /**
-//     * Computes the closest walls of this Room and the given Room and returns the
-//     * coordinates of their midpoints.
-//     *
-//     * @param other other Room to connect to
-//     * @param random Random object
-//     * @return an ArrayList of Pairs containing the coordinates of walls to connect
-//     */
-//    public ArrayList<Pair<Integer, Integer>> connect(Room other, Random random) {
-//        int wall1x = 0;
-//        int wall1y = 0;
-//        int wall2x = 0;
-//        int wall2y = 0;
-//        double min_dist = Float.MAX_VALUE;
-//        for (ArrayList<Integer> wall : this.walls) {
-//            for (ArrayList<Integer> other_wall : other.walls) {
-//                float mid1x = (wall.get(0) + wall.get(2)) / 2;
-//                float mid1y = (wall.get(1) + wall.get(3)) / 2;
-//                float mid2x = (other_wall.get(0) + other_wall.get(2)) / 2;
-//                float mid2y = (other_wall.get(1) + other_wall.get(3)) / 2;
-//                double cur_dist = Math.sqrt((mid2x - mid1x)*(mid2x - mid1x) + (mid2y - mid1y)*(mid2y - mid1y));
-//                if (cur_dist < min_dist) {
-//                    min_dist = cur_dist;
-//                    wall1x = (int) mid1x;
-//                    wall1y = (int) mid1y;
-//                    wall2x = (int) mid2x;
-//                    wall2y = (int) mid2y;
-//                }
-//            }
-//        }
-//        return new ArrayList<>(List.of(new Pair(wall1x, wall1y), new Pair(wall2x, wall2y)));
-//    }
-}
