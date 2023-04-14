@@ -4,6 +4,8 @@ import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 import com.github.javaparser.utils.Pair;
+
+import java.util.Comparator;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -30,8 +32,8 @@ public class World {
         worldHeight = height;
         random = new Random(seed);
         int worldSize = worldWidth * worldHeight;
-        int maxRooms = (int) Math.floor((worldSize / 100.0) * (7.0/8.0));
-        int minRooms = (int) Math.floor((worldSize / 100.0) * (2.0/3.0));
+        int maxRooms = (int) Math.floor((worldSize / 75.0) * (14.0/15.0));
+        int minRooms = (int) Math.floor((worldSize / 75.0) * (2.0/3.0));
         NUM_ROOMS = random.nextInt(minRooms, maxRooms);
         roomTree = new RoomTree(NUM_ROOMS);
         rooms = new ArrayList<>(NUM_ROOMS);
@@ -53,12 +55,23 @@ public class World {
             }
             addRoom2World(rm);
         }
-        this.roomTree = new RoomTree(rooms.size());
-        while (!roomTree.fullyConnected()) {
-            Pair<Integer, Integer> roomPair = roomTree.pickDisjointRooms(this.random);
-            connectRooms(roomPair.a, roomPair.b, this.random);
+//        this.roomTree = new RoomTree(rooms.size());
+//        while (!roomTree.fullyConnected()) {
+//            Pair<Integer, Integer> roomPair = roomTree.pickDisjointRooms(this.random);
+//            connectRooms(roomPair.a, roomPair.b, this.random);
+//        }
+        Comparator c = new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Room r1 = (Room) o1;
+                Room r2 = (Room) o2;
+                return r1.getX() - r2.getX();
+            }
+        };
+        rooms.sort(c);
+        for (int i = 0; i < rooms.size() - 1; i++) {
+            connectRooms(i, i + 1, random);
         }
-        return;
     }
 
     /*** does a preliminary check of the proposed room before creating it
