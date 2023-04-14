@@ -12,12 +12,14 @@ public class World {
     private ArrayList<Room> rooms;
     int worldWidth;
     int worldHeight;
-    int FIVE = 5;
+    int ONE_HUNDRED = 100;
+    double TWO_THIRDS = 2/3;
+    double ONE_THIRD = 1/3;
 
     public void createWorld(Long seed, int wrldWidth, int wrldHeight) {
         Random random = new Random(seed);
-        int maxRooms = ((wrldWidth * wrldHeight) / 100) * (2/3);
-        int minRooms = ((wrldWidth * wrldHeight) / 100) * (1/3);
+        int maxRooms = (int)((wrldWidth * wrldHeight) / ONE_HUNDRED) * TWO_THIRDS);
+        int minRooms = (int)((wrldWidth * wrldHeight) / ONE_HUNDRED) * ONE_THIRD);
         int NUM_ROOMS = random.nextInt(minRooms, maxRooms);
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
@@ -27,8 +29,7 @@ public class World {
             }
             addRoom2World(rm);
         }
-        this.roomTree = new RoomTree();
-
+        this.roomTree = new RoomTree(rooms.size());
 
         return;
     }
