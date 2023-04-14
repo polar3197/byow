@@ -46,6 +46,10 @@ public class World {
         }
     }
 
+    public TETile[][] getWorld() {
+        return world;
+    }
+
     public void createWorld() {
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
