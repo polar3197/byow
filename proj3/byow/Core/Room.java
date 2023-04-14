@@ -49,9 +49,9 @@ public class Room {
     (0, 0) is top left corner
     (3, 4) is bottom right corner
      */
-    public Room(Random random, int newWidth, int newHeight) {
-        x = Integer.MAX_VALUE;
-        y = Integer.MAX_VALUE;
+    public Room(Random random, int x, int y, int newWidth, int newHeight) {
+        this.x = x;
+        this.y = y;
         width = newWidth;
         height = newHeight;
         roomGrid = new TETile[this.width][this.height];
@@ -77,16 +77,19 @@ public class Room {
         endPoints.add(new Pair<>(width - 1, height - 1));
         endPoints.add(new Pair<>(width - 1, height - 1));
         for (int i = 0; i < 4; i++) {
-            int x;
-            int y;
+            int x1;
+            int y1;
             if (startPoints.get(i).a == endPoints.get(i).a) {
-                x = startPoints.get(i).a;
-                y = random.nextInt(startPoints.get(i).b + 1, endPoints.get(i).b);
+                x1 = startPoints.get(i).a;
+                int y_start = startPoints.get(i).b;
+                int y_end = endPoints.get(i).b;
+                y1 = random.nextInt(y_start + 1, y_end);
+
             } else {
-                x = random.nextInt(startPoints.get(i).a + 1, endPoints.get(i).a);
-                y = startPoints.get(i).b;
+                x1 = random.nextInt(startPoints.get(i).a + 1, endPoints.get(i).a);
+                y1 = startPoints.get(i).b;
             }
-            potentialDoors.add(new Pair<>(x, y));
+            potentialDoors.add(new Pair<>(x1, y1));
         }
     }
 

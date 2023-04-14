@@ -1,5 +1,6 @@
 package byow.Core;
 
+import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 import com.github.javaparser.utils.Pair;
@@ -10,15 +11,40 @@ public class World {
     private TETile[][] world;
     private RoomTree roomTree;
     private ArrayList<Room> rooms;
-    int worldWidth;
-    int worldHeight;
-    int FIVE = 5;
+    private int worldWidth;
+    private int worldHeight;
+    final int NUM_ROOMS;
 
-    public void createWorld(Long seed, int wrldWidth, int wrldHeight) {
-        Random random = new Random(seed);
-        int maxRooms = ((wrldWidth * wrldHeight) / 100) * (2/3);
-        int minRooms = ((wrldWidth * wrldHeight) / 100) * (1/3);
-        int NUM_ROOMS = random.nextInt(minRooms, maxRooms);
+    private Random random;
+
+    public static void main(String args[]) {
+        World world = new World(System.currentTimeMillis(), 80, 30);
+        world.createWorld();
+        TERenderer renderer = new TERenderer();
+        renderer.initialize(80, 30);
+        renderer.renderFrame(world.world);
+    }
+
+    public World(Long seed, int width, int height) {
+        worldWidth = width;
+        worldHeight = height;
+        random = new Random(seed);
+        int worldSize = worldWidth * worldHeight;
+        int maxRooms = (int) Math.floor((worldSize / 100.0) * (7.0/8.0));
+        int minRooms = (int) Math.floor((worldSize / 100.0) * (2.0/3.0));
+        NUM_ROOMS = random.nextInt(minRooms, maxRooms);
+        roomTree = new RoomTree(NUM_ROOMS);
+        rooms = new ArrayList<>(NUM_ROOMS);
+
+        world = new TETile[worldWidth][worldHeight];
+        for (int i = 0; i < worldWidth; i++) {
+            for (int j = 0; j < worldHeight; j++) {
+                setTile(i, j, Tileset.WALL);
+            }
+        }
+    }
+
+    public void createWorld() {
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
             Room rm = null;
@@ -27,22 +53,18 @@ public class World {
             }
             addRoom2World(rm);
         }
-        this.roomTree = new RoomTree(NUM_ROOMS);
-
-
-        return;
     }
 
     /*** does a preliminary check of the proposed room before creating it
-     * @param x = x coor of bottom left
-     *        y = y coor of bottom left
+     * @param x = x coordinate of bottom left
+     *        y = y coordinate of bottom left
      *        width = proposed width of room
      *        height = proposed height of room
      * @return true if an overlap is detected, false otherwise
      */
     public boolean detectOverlap(int x, int y, int width, int height) {
-        for (int i = x; i < x + width - 1; i++) {
-            for (int j = y; j < y + height - 1; j++) {
+        for (int i = x - 1; i < x + width; i++) {
+            for (int j = y - 1; j < y + height; j++) {
                 if (world[i][j].equals(Tileset.FLOOR)) return true;
             }
         }
@@ -50,29 +72,30 @@ public class World {
     }
 
     public Room chooseLocation(Random random) {
-        int x = random.nextInt(0, this.worldWidth - 2);
-        int y = random.nextInt(0, this.worldHeight - 2);
-        if (world[x][y] == Tileset.FLOOR || world[x][y] == Tileset.WALL) {
+        int x = random.nextInt(1, this.worldWidth - 5);
+        int y = random.nextInt(1, this.worldHeight - 5);
+        if (world[x][y] == Tileset.FLOOR) {
             return null;
         }
-        int width = random.nextInt(0, this.worldWidth - x + 1);
-        int height = random.nextInt(0, this.worldHeight - y + 1);
+        int width = random.nextInt(5, Math.min(this.worldWidth - x, 11));
+        int height = random.nextInt(5, Math.min(this.worldHeight - y, 11));
         if (detectOverlap(x, y, width, height) == true) {
             return null;
         }
-        Room rm = new Room(random, width, height);
+        Room rm = new Room(random, x, y, width, height);
         return rm;
     }
 
     public void addRoom2World(Room newRm) {
         int x = newRm.getX();
         int y = newRm.getY();
-        for (int i = x; i < newRm.getwidth(); i++) {
-            for (int j = y; j < newRm.getwidth(); j++) {
-                this.world[i][j] = newRm.getTile(i - x - 1, j - y - 1);
+        for (int i = x + 1; i < x + newRm.getwidth() - 1; i++) {
+            for (int j = y + 1; j < y + newRm.getHeight() - 1; j++) {
+                setTile(i, j, Tileset.FLOOR);
             }
         }
         this.rooms.add(newRm);
+
     }
 
     /**
@@ -139,7 +162,7 @@ public class World {
         }
         for (int i = x_start; i <= x_end; i++) {
             for (int j = y_start; j <= y_end; j++) {
-                world[i][j] = tile;
+                setTile(i, j, tile);
             }
         }
     }
