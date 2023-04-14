@@ -15,6 +15,7 @@ public class World {
     int FIVE = 5;
 
     public void createWorld(Long seed) {
+        this roomTree = new RoomTree();
         Random random = new Random(seed);
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
@@ -69,6 +70,7 @@ public class World {
                 this.world[i][j] = newRm.getTile(i - x - 1, j - y - 1);
             }
         }
+
     }
 
 }
