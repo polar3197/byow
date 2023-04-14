@@ -53,6 +53,9 @@ public class World {
             }
             addRoom2World(rm);
         }
+        this.roomTree = new RoomTree(rooms.size());
+
+        return;
     }
 
     /*** does a preliminary check of the proposed room before creating it

@@ -14,41 +14,68 @@ public class RoomTree {
         makeSet();
     }
 
+    public void printParent() {
+        System.out.println(parent.toString());
+    }
+
+    public void printRank() {
+        System.out.println(rank.toString());
+    }
+
     // Creates n sets with single item in each
-    void makeSet() {
+    public void makeSet() {
         for (int i = 0; i < size; i++) {
-            parent[i] = i;
+            parent[i] = -1;
         }
     }
 
-    // Returns representative of x's set
-    public int find(int val) {
-        int p = this.parent[val];
-        if (p == val) {
-            return val;
-        } else {
-            int root = find(p);
-            return root;
+    // checks if disjoint set is fully connected
+    public boolean fullyConnected() {
+        for (int i = 0; i < parent.length; i++) {
+            if (parent[i] == (-1 * size)) {
+                return true;
+            }
         }
+        return false;
     }
 
     private void setParent(int val, int root) {
         this.parent[val] = root;
     }
 
+    // Returns representative of x's set
+    public int find(int val) {
+        int p = this.parent[val];
+        if (p < 0) {
+            return val;
+        } else {
+            int root = find(p);
+            setParent(val, root);
+            return root;
+        }
+    }
+
     // Unites the set that includes x and the set that includes y
     public void union(int x, int y) {
+        // subtract parent[yRoot] from parent[xRoot]
+
         // Find representatives of two sets
         int xRoot = find(x), yRoot = find(y);
         if (xRoot == yRoot) {
             return;
         }
         if (rank[xRoot] < rank[yRoot]) {
+            parent[yRoot] += parent[xRoot];
+            parent[xRoot] = yRoot;
             parent[xRoot] = yRoot;
         } else if (rank[yRoot] < rank[xRoot]) { // Else if y's rank is less than x's rank
+            parent[xRoot] += parent[yRoot];
+            parent[yRoot] = xRoot;
             parent[yRoot] = xRoot;
         } else { // if ranks are the same
+            parent[xRoot] += parent[yRoot];
             parent[yRoot] = xRoot;
+
             rank[xRoot]++;
         }
     }
