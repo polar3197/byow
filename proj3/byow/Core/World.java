@@ -33,7 +33,7 @@ public class World {
         random = new Random(seed);
         int worldSize = worldWidth * worldHeight;
         int maxRooms = (int) Math.floor((worldSize / 75.0) * (14.0/15.0));
-        int minRooms = (int) Math.floor((worldSize / 75.0) * (2.0/3.0));
+        int minRooms = (int) Math.floor((worldSize / 75.0) * (1.0/2.0));
         NUM_ROOMS = random.nextInt(minRooms, maxRooms);
         roomTree = new RoomTree(NUM_ROOMS);
         rooms = new ArrayList<>(NUM_ROOMS);
