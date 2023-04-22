@@ -19,14 +19,21 @@ public class Engine {
 
 
     public Engine() {
-        mouseAdapter = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
+        System.out.println("Engine constructor called");
+//        mouseAdapter = new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
 //                    super.mouseEntered(e);
-                TETile tile = getTileAt(e.getX(), e.getY());
-                System.out.println(tile.description());
-            }
-        };
+//                TETile tile = getTileAt(e.getX(), e.getY());
+//                System.out.println(tile.description());
+//            }
+//
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//                System.out.println("Mouse clicked");
+//            }
+//        };
     }
 
     /**
@@ -34,7 +41,13 @@ public class Engine {
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
-
+        world = new World(System.currentTimeMillis(), WIDTH, HEIGHT);
+        world.createWorld();
+        TETile[][] finalWorldFrame = world.getWorld();
+        ter.initialize(80, 30);
+        while (true) {
+            ter.renderFrame(finalWorldFrame);
+        }
     }
 
     /**
@@ -73,7 +86,6 @@ public class Engine {
         world = new World(seed, WIDTH, HEIGHT);
         world.createWorld();
         TETile[][] finalWorldFrame = world.getWorld();
-        ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
     }
 

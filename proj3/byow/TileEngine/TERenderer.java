@@ -17,6 +17,9 @@ public class TERenderer {
     private int height;
     private int xOffset;
     private int yOffset;
+    private int prevMouseX = Integer.MAX_VALUE;
+    private int prevMouseY = Integer.MAX_VALUE;
+    private TETile hoveredTile = Tileset.NOTHING;
 
     /**
      * Same functionality as the other initialization method. The only difference is that the xOff
@@ -34,7 +37,7 @@ public class TERenderer {
         this.yOffset = yOff;
         StdDraw.setCanvasSize(width * TILE_SIZE, height * TILE_SIZE);
         Font font = new Font("Monaco", Font.BOLD, TILE_SIZE - 2);
-        StdDraw.setFont(font);      
+        StdDraw.setFont(font);
         StdDraw.setXscale(0, width);
         StdDraw.setYscale(0, height);
 
@@ -86,7 +89,8 @@ public class TERenderer {
     public void renderFrame(TETile[][] world) {
         int numXTiles = world.length;
         int numYTiles = world[0].length;
-        StdDraw.clear(new Color(0, 0, 0));
+        StdDraw.clear(new Color(255, 255, 255));
+
         for (int x = 0; x < numXTiles; x += 1) {
             for (int y = 0; y < numYTiles; y += 1) {
                 if (world[x][y] == null) {
@@ -95,6 +99,18 @@ public class TERenderer {
                 }
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
+        }
+        StdDraw.filledRectangle(3, numYTiles, 3, 1);
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
+        StdDraw.setPenColor(Color.WHITE);
+        if ((x != prevMouseX || y != prevMouseY) && y < numYTiles) {
+            hoveredTile = world[x][y];
+            StdDraw.textLeft(1, numYTiles - 1, hoveredTile.description());
+            prevMouseX = x;
+            prevMouseY = y;
+        } else {
+            StdDraw.textLeft(1, numYTiles - 1, hoveredTile.description());
         }
         StdDraw.show();
     }
