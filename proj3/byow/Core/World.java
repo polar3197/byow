@@ -16,6 +16,7 @@ public class World {
     private int worldWidth;
     private int worldHeight;
     final int NUM_ROOMS;
+    public Pair<Integer, Integer> avatarPos;
 
     private Random random;
 
@@ -77,7 +78,37 @@ public class World {
             connectRooms(i, i + 1, random);
         }
         removeWalls();
+        Room rm = rooms.get(0);
+        int x = rm.getX();
+        int y = rm.getY();
+        avatarPos = new Pair<>(x + 1, y + 1);
+        world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
         return;
+    }
+
+    public boolean move(char dir) {
+        if (dir == 'a' && world[avatarPos.a - 1][avatarPos.b] == Tileset.FLOOR) {
+            avatarPos = new Pair<>(avatarPos.a - 1, avatarPos.b);
+            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+            world[avatarPos.a + 1][avatarPos.b] = Tileset.FLOOR;
+            return true;
+        } else if (dir == 'd' && world[avatarPos.a + 1][avatarPos.b] == Tileset.FLOOR) {
+            avatarPos = new Pair<>(avatarPos.a + 1, avatarPos.b);
+            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+            world[avatarPos.a - 1][avatarPos.b] = Tileset.FLOOR;
+            return true;
+        } else if (dir == 'w' && world[avatarPos.a][avatarPos.b  + 1] == Tileset.FLOOR) {
+            avatarPos = new Pair<>(avatarPos.a, avatarPos.b  + 1);
+            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+            world[avatarPos.a][avatarPos.b - 1] = Tileset.FLOOR;
+            return true;
+        } else if (dir == 's' && world[avatarPos.a][avatarPos.b - 1] == Tileset.FLOOR) {
+            avatarPos = new Pair<>(avatarPos.a, avatarPos.b  - 1);
+            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+            world[avatarPos.a][avatarPos.b + 1] = Tileset.FLOOR;
+            return true;
+        }
+        return false;
     }
 
     /*** does a preliminary check of the proposed room before creating it

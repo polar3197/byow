@@ -2,18 +2,94 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import edu.princeton.cs.algs4.StdDraw;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+    public static final int LSWIDTH = 40;
+    public static final int LSHEIGHT = 40;
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+        Scanner myObj = new Scanner(System.in);
+        ter.initialize(LSWIDTH, LSHEIGHT);
+        ter.loadScreen();
+        while (!StdDraw.hasNextKeyTyped()) {}
+        long longSeed = menuExec(StdDraw.nextKeyTyped());
+        while (longSeed == -2) { // -2 indicates an INVALID MENU CHOICE
+            while (!StdDraw.hasNextKeyTyped()) {}
+            longSeed = menuExec(StdDraw.nextKeyTyped());
+        }
+        if (longSeed == -1) { // user chose QUIT
+            return;
+        }
+        World world = new World(longSeed, WIDTH, HEIGHT);
+        world.createWorld();
+        TETile[][] finalWorldFrame = world.getWorld();
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
+
+        boolean colon = false;
+        while (!StdDraw.hasNextKeyTyped()) {}
+        char key = StdDraw.nextKeyTyped();
+        while (!((key == 'Q' || key == 'q') && colon)) {
+            colon = false;
+            char dir = '?';
+            if (key == 'A' || key == 'a') {
+                dir = 'a';
+            } else if (key == 'S' || key == 's') {
+                dir = 's';
+            } else if (key == 'W' || key == 'w') {
+                dir = 'w';
+            } else if (key == 'D' || key == 'd') {
+                dir = 'd';
+            }
+            if (world.move(dir)) {
+                ter.renderFrame(world.getWorld());
+            }
+            if (key == ':') {
+                colon = true;
+            }
+            while (!StdDraw.hasNextKeyTyped()) {}
+            key = StdDraw.nextKeyTyped();
+        }
+    }
+
+    // returns seed (-1 if command is QUIT)
+    public long menuExec(char command) {
+        if (command == 'n' || command == 'N') {
+            String seed = "";
+            ter.prompt(seed);
+            while (!StdDraw.hasNextKeyTyped()) {}
+            char key = StdDraw.nextKeyTyped();
+            while (key != 's' && key != 'S') {
+                if ('0' <= key && key <= '9') {
+                    seed += key;
+                }
+                ter.prompt(seed);
+                while (!StdDraw.hasNextKeyTyped()) {}
+                key = StdDraw.nextKeyTyped();
+            }
+            return Long.valueOf(seed);
+        } else if (command == 'l' || command == 'L') {
+
+            // return loaded seed;
+        } else if (command == 'q' || command == 'Q') {
+            StdDraw.clear(new Color(0, 0, 0));
+            StdDraw.show();
+            return -1;
+        }
+        return -2;
     }
 
     /**
