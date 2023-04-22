@@ -1,5 +1,9 @@
 package byow.Core;
 import byow.Core.RoomTree;
+import byow.TileEngine.TETile;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /** This is the main entry point for the program. This class simply parses
  *  the command line inputs, and lets the byow.Core.Engine class take over
@@ -13,7 +17,6 @@ public class Main {
         } else if (args.length == 2 && args[0].equals("-s")) {
             Engine engine = new Engine();
             engine.interactWithInputString(args[1]);
-            System.out.println(engine.toString());
         } else {
             Engine engine = new Engine();
             engine.interactWithKeyboard();

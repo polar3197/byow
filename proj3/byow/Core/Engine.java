@@ -2,18 +2,39 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import edu.princeton.cs.algs4.StdDraw;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+    private MouseAdapter mouseAdapter;
+    private World world;
+
+
+    public Engine() {
+        mouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+//                    super.mouseEntered(e);
+                TETile tile = getTileAt(e.getX(), e.getY());
+                System.out.println(tile.description());
+            }
+        };
+    }
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
+
     }
 
     /**
@@ -49,9 +70,14 @@ public class Engine {
             seedString[i - 1] = input.charAt(i);
         }
         long seed = Long.valueOf(new String(seedString));
-        World world = new World(seed, WIDTH, HEIGHT);
+        world = new World(seed, WIDTH, HEIGHT);
         world.createWorld();
         TETile[][] finalWorldFrame = world.getWorld();
+        ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
+    }
+
+    public TETile getTileAt(int x, int y) {
+        return world.getWorld()[x][y];
     }
 }
