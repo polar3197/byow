@@ -43,10 +43,5 @@ Room {
   
 ## Algorithms
 
-World Generation:  
-1. Partition the world into 4 quadrants  
-2. Place an equal number of randomly placed rooms in each quadrant  total = (map size / max room size) * 2/3
-3. Treat each room as a tree in a disjoint set
-4. Connect trees together with weighted quick union
 
 ## Persistence
