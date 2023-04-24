@@ -2,13 +2,13 @@ package byow.Core;
 
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
+import com.github.javaparser.utils.Pair;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +19,10 @@ public class Engine {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+
+    public static final int LSWIDTH = 40;
+    public static final int LSHEIGHT = 40;
+
     private MouseAdapter mouseAdapter;
     private World world;
 
@@ -32,13 +36,84 @@ public class Engine {
      * including inputs from the main menu.
      */
     public void interactWithKeyboard() {
-        world = new World(System.currentTimeMillis(), WIDTH, HEIGHT);
-        world.createWorld();
-        TETile[][] finalWorldFrame = world.getWorld();
-        ter.initialize(WIDTH, HEIGHT);
-        while (true) {
-            ter.renderFrame(finalWorldFrame);
+        ter.initialize(LSWIDTH, LSHEIGHT);
+        ter.loadScreen();
+        while (!StdDraw.hasNextKeyTyped()) {}
+        long longSeed = menuExec(StdDraw.nextKeyTyped());
+        while (longSeed == -2) { // -2 indicates an INVALID MENU CHOICE
+            while (!StdDraw.hasNextKeyTyped()) {}
+            longSeed = menuExec(StdDraw.nextKeyTyped());
         }
+        if (longSeed == -1) { // user chose QUIT
+            return;
+        }
+        World world = new World(longSeed, WIDTH, HEIGHT);
+        world.createWorld();
+        boolean light = false;
+        TETile[][] finalWorldFrame = world.getWorld(light);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
+
+        boolean colon = false;
+        while (!StdDraw.hasNextKeyTyped()) {}
+        char key = StdDraw.nextKeyTyped();
+        while (true) {
+            Pair<Integer, Integer> dir = new Pair<Integer, Integer>(0, 0);
+            if ((key == 'Q' || key == 'q') && colon) {
+                break;
+            }
+            colon = false;
+            if (key == 'o' || key == 'O') {
+                light = !light;
+                ter.renderFrame(world.getWorld(light));
+            } else if (key == 'A' || key == 'a') {
+                dir = new Pair<Integer, Integer>(-1, 0);
+            } else if (key == 'S' || key == 's') {
+                dir = new Pair<Integer, Integer>(0, -1);
+            } else if (key == 'W' || key == 'w') {
+                dir = new Pair<Integer, Integer>(0, 1);
+            } else if (key == 'D' || key == 'd') {
+                dir = new Pair<Integer, Integer>(1, 0);
+            } else if (key == ':') {
+                colon = true;
+            }
+            if (world.move(dir)) {
+                ter.renderFrame(world.getWorld(light));
+            }
+            while (!StdDraw.hasNextKeyTyped()) {}
+            key = StdDraw.nextKeyTyped();
+        }
+        ter.prompt("Game Over");
+    }
+
+    // returns seed (-1 if command is QUIT)
+    public long menuExec(char command) {
+        if (command == 'n' || command == 'N') {
+            String seed = "";
+            ter.prompt(seed, "Enter random seed:");
+            while (!StdDraw.hasNextKeyTyped()) {}
+            char key = StdDraw.nextKeyTyped();
+            while (true) {
+                if ((key == 's' || key == 'S') && seed != "") {
+                    break;
+                }
+                if ('0' <= key && key <= '9') {
+                    seed += key;
+                }
+                ter.prompt(seed, "Enter random seed:");
+                while (!StdDraw.hasNextKeyTyped()) {}
+                key = StdDraw.nextKeyTyped();
+            }
+            return Long.valueOf(seed);
+        } else if (command == 'l' || command == 'L') {
+
+            // return loaded seed;
+        } else if (command == 'q' || command == 'Q') {
+            StdDraw.clear(new Color(0, 0, 0));
+            StdDraw.show();
+            return -1;
+        }
+        return -2;
     }
 
     /**
