@@ -8,16 +8,20 @@ import com.github.javaparser.utils.Pair;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.ArrayList;
+import java.lang.Math;
+
+import static java.lang.Math.abs;
 
 public class World {
     private TETile[][] world;
+    private TETile[][] darkWorld;
     private RoomTree roomTree;
     private ArrayList<Room> rooms;
     private int worldWidth;
     private int worldHeight;
     final int NUM_ROOMS;
+    private int RADIUS_OF_SIGHT = 6;
     public Pair<Integer, Integer> avatarPos;
-
     private Random random;
 
     public static void main(String args[]) {
@@ -44,6 +48,14 @@ public class World {
             for (int j = 0; j < worldHeight; j++) {
                 setTile(i, j, Tileset.WALL);
             }
+        }
+    }
+
+    public TETile[][] getWorld(boolean light) {
+        if (light) {
+            return world;
+        } else {
+            return darkWorld;
         }
     }
 
@@ -83,33 +95,85 @@ public class World {
         int y = rm.getY();
         avatarPos = new Pair<>(x + 1, y + 1);
         world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+
+        darkWorld = new TETile[worldWidth][worldHeight];
+        for (int i = 0; i < worldWidth; i++) {
+            for (int j = 0; j < worldHeight; j++) {
+                if (abs((i - avatarPos.a)) + abs((j - avatarPos.b)) <= RADIUS_OF_SIGHT && inBounds(i, j)) {
+                    darkWorld[i][j] = world[i][j];
+                } else {
+                    darkWorld[i][j] = Tileset.NOTHING;
+                }
+            }
+        }
         return;
     }
 
-    public boolean move(char dir) {
-        if (dir == 'a' && world[avatarPos.a - 1][avatarPos.b] == Tileset.FLOOR) {
-            avatarPos = new Pair<>(avatarPos.a - 1, avatarPos.b);
+    public Pair<Integer, Integer> addPairs(Pair<Integer, Integer> first, Pair<Integer, Integer> second) {
+        return new Pair<>(first.a + second.a, first.b + second.b);
+    }
+
+    public boolean move(Pair<Integer, Integer> dir) {
+        Pair<Integer, Integer> temp = addPairs(dir, avatarPos);
+        if (inBounds(temp.a, temp.b) && world[temp.a][temp.b] == Tileset.FLOOR) {
+            world[avatarPos.a][avatarPos.b] = Tileset.FLOOR;
+            darkWorld[avatarPos.a][avatarPos.b] = Tileset.FLOOR;
+            avatarPos = temp;
             world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
-            world[avatarPos.a + 1][avatarPos.b] = Tileset.FLOOR;
-            return true;
-        } else if (dir == 'd' && world[avatarPos.a + 1][avatarPos.b] == Tileset.FLOOR) {
-            avatarPos = new Pair<>(avatarPos.a + 1, avatarPos.b);
-            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
-            world[avatarPos.a - 1][avatarPos.b] = Tileset.FLOOR;
-            return true;
-        } else if (dir == 'w' && world[avatarPos.a][avatarPos.b  + 1] == Tileset.FLOOR) {
-            avatarPos = new Pair<>(avatarPos.a, avatarPos.b  + 1);
-            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
-            world[avatarPos.a][avatarPos.b - 1] = Tileset.FLOOR;
-            return true;
-        } else if (dir == 's' && world[avatarPos.a][avatarPos.b - 1] == Tileset.FLOOR) {
-            avatarPos = new Pair<>(avatarPos.a, avatarPos.b  - 1);
-            world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
-            world[avatarPos.a][avatarPos.b + 1] = Tileset.FLOOR;
+            darkWorld[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+            shiftLight();
             return true;
         }
         return false;
     }
+
+    private void shiftLight() {
+        for (int i = -(RADIUS_OF_SIGHT + 1); i <= RADIUS_OF_SIGHT + 1; i++) {
+            for (int j = -(RADIUS_OF_SIGHT + 1) + abs(i); j <= RADIUS_OF_SIGHT + 1 - abs(i); j ++) {
+                if (inBounds(avatarPos.a + i, avatarPos.b + j)) {
+                    darkWorld[avatarPos.a + i][avatarPos.b + j] = Tileset.NOTHING;
+                }
+            }
+        }
+        for (int i = -RADIUS_OF_SIGHT; i <= RADIUS_OF_SIGHT; i++) {
+            for (int j = -(RADIUS_OF_SIGHT) + abs(i); j <= RADIUS_OF_SIGHT - abs(i); j++) {
+                if (inBounds(avatarPos.a + i, avatarPos.b + j)) {
+                    darkWorld[avatarPos.a + i][avatarPos.b + j] = world[avatarPos.a + i][avatarPos.b + j];
+                }
+            }
+        }
+    }
+
+    public boolean inBounds(int i, int j) {
+        return ((0 <= i && i < worldWidth) && (0 <= j && j < worldHeight));
+    }
+        /*
+        for (int i = 0; i < worldWidth; i++) {
+            for (int j = 0; j < worldHeight; j++) {
+                if (darkWorld[i][j] != Tileset.NOTHING) {
+                    if ((i + dir.a < worldWidth) && (j + dir.b < worldHeight)) {
+                        darkWorld[i + dir.a][j + dir.b] = world[i + dir.a][j + dir.b];
+                    }
+                } else if ((i - dir.a < worldWidth) && (j - dir.b < worldHeight)) {
+                    if (darkWorld[i - dir.a][j - dir.b] != Tileset.NOTHING) {
+                        darkWorld[i][j] = Tileset.NOTHING;
+                    }
+                }
+            }
+        }
+         */
+
+                /*
+                if ((i + dir.a < worldWidth) && (j + dir.b < worldHeight)) {
+                    if (darkWorld[i][j] != Tileset.NOTHING) {
+                        darkWorld[i + dir.a][j + dir.b] = world[i + dir.a][j + dir.b];
+                    } else {
+                        if (darkWorld[i - dir.a][j - dir.b] != Tileset.NOTHING) {
+                            darkWorld[i - dir.a][j - dir.b] = Tileset.NOTHING;
+                        }
+                    }
+                }
+                */
 
     /*** does a preliminary check of the proposed room before creating it
      * @param x = x coordinate of bottom left
