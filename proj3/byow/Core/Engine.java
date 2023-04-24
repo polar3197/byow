@@ -3,19 +3,33 @@ package byow.Core;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 import com.github.javaparser.utils.Pair;
-import edu.princeton.cs.algs4.StdDraw;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
+
     public static final int LSWIDTH = 40;
     public static final int LSHEIGHT = 40;
+
+    private MouseAdapter mouseAdapter;
+    private World world;
+
+
+    public Engine() {
+        System.out.println("Engine constructor called");
+    }
 
     /**
      * Method used for exploring a fresh world. This method should handle all inputs,
@@ -130,14 +144,43 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
-        char[] seedString = new char[input.length() - 2];
-        for (int i = 1; i < input.length() - 1; i++) {
-            seedString[i - 1] = input.charAt(i);
+        StringBuffer seedBuf = new StringBuffer();
+        long seed = Long.MAX_VALUE;
+        String savePath = "./out/production/proj3/last_save.SAV";
+        if (input.charAt(0) == 'N') {
+            int seedLength = 0;
+            while (input.charAt(1 + seedLength) != 'S') {
+                seedBuf.append(input.charAt(1 + seedLength));
+                seedLength++;
+            }
+            seed = Long.valueOf(seedBuf.toString());
+            if (input.substring(input.length() - 2, input.length()).equals(":Q")) { // save world and terminate
+                try {
+                    FileWriter saveFile = new FileWriter(savePath);
+                    saveFile.write(String.valueOf(seed) + '\n');
+                    saveFile.close();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        } else if (input.charAt(0) == 'L') {   // load previous save
+            File saveFile = new File(savePath);
+            if (!saveFile.exists()) {
+                try {
+                    saveFile.createNewFile();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+            In fileReader = new In(savePath);
+            seed = Long.valueOf(fileReader.readLine().trim());
+            fileReader.close();
         }
-        long seed = Long.valueOf(new String(seedString));
-        World world = new World(seed, WIDTH, HEIGHT);
+        world = new World(seed, WIDTH, HEIGHT);
         world.createWorld();
         TETile[][] finalWorldFrame = world.getWorld();
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
     }
 }
