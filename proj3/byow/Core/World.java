@@ -58,6 +58,9 @@ public class World {
             return darkWorld;
         }
     }
+    public void setRADIUS_OF_SIGHT(int newROS) {
+        this.RADIUS_OF_SIGHT = newROS;
+    }
 
     public TETile[][] getWorld() {
         return world;
