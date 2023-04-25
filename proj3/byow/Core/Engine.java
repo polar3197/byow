@@ -5,6 +5,7 @@ import byow.TileEngine.TETile;
 import com.github.javaparser.utils.Pair;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import edu.princeton.cs.algs4.In;
@@ -12,7 +13,6 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class Engine {
     TERenderer ter = new TERenderer();
@@ -37,7 +37,7 @@ public class Engine {
      */
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
-        ter.loadScreen();
+//        ter.loadScreen();
         while (!StdDraw.hasNextKeyTyped()) {}
         long longSeed = menuExec(StdDraw.nextKeyTyped());
         while (longSeed == -2) { // -2 indicates an INVALID MENU CHOICE
@@ -83,14 +83,14 @@ public class Engine {
             while (!StdDraw.hasNextKeyTyped()) {}
             key = StdDraw.nextKeyTyped();
         }
-        ter.prompt("Game Over");
+//        ter.prompt("Game Over");
     }
 
     // returns seed (-1 if command is QUIT)
     public long menuExec(char command) {
         if (command == 'n' || command == 'N') {
             String seed = "";
-            ter.prompt(seed, "Enter random seed:");
+//            ter.prompt(seed, "Enter random seed:");
             while (!StdDraw.hasNextKeyTyped()) {}
             char key = StdDraw.nextKeyTyped();
             while (true) {
@@ -100,12 +100,17 @@ public class Engine {
                 if ('0' <= key && key <= '9') {
                     seed += key;
                 }
-                ter.prompt(seed, "Enter random seed:");
+//                ter.prompt(seed, "Enter random seed:");
                 while (!StdDraw.hasNextKeyTyped()) {}
                 key = StdDraw.nextKeyTyped();
             }
             return Long.valueOf(seed);
         } else if (command == 'l' || command == 'L') {
+            // TODO: load player position
+            In reader = new In("./out/production/proj3/last_save.SAV");
+            if (reader.hasNextLine()) {
+
+            }
 
             // return loaded seed;
         } else if (command == 'q' || command == 'Q') {
