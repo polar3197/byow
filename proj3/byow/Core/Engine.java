@@ -40,12 +40,16 @@ public class Engine {
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
         ter.loadScreen();
-        while (!StdDraw.hasNextKeyTyped()) { continue; }
+        while (!StdDraw.hasNextKeyTyped()) {
+            continue;
+        }
         long longSeed = menuExec(StdDraw.nextKeyTyped());
         Pair<Long, Pair<Integer, Integer>> loadData = null;
         while (longSeed == MENU_FLAG || (longSeed == LOAD_FLAG && loadData == null)) {
             ter.loadScreen();
-            while (!StdDraw.hasNextKeyTyped()) { continue; }
+            while (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
             longSeed = menuExec(StdDraw.nextKeyTyped());
             if (longSeed == LOAD_FLAG) { // user chose LOAD
                 loadData = loadSave();
@@ -211,7 +215,9 @@ public class Engine {
         if (command == 'n' || command == 'N') {
             String seed = "";
             ter.prompt(seed, "Enter random seed:");
-            while (!StdDraw.hasNextKeyTyped()) { continue; }
+            while (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
             char key = StdDraw.nextKeyTyped();
             while (true) {
                 if ((key == 's' || key == 'S') && seed.length() != 0) {
@@ -221,7 +227,9 @@ public class Engine {
                     seed += key;
                 }
                 ter.prompt(seed, "Enter random seed:");
-                while (!StdDraw.hasNextKeyTyped()) {}
+                while (!StdDraw.hasNextKeyTyped()) {
+                    continue;
+                }
                 key = StdDraw.nextKeyTyped();
             }
             return Long.valueOf(seed);
@@ -229,7 +237,9 @@ public class Engine {
             return LOAD_FLAG;
         } else if (command == 'c' || command == 'C') {
             avatarName = "";
-            while (!StdDraw.hasNextKeyTyped()) { continue; }
+            while (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
             char key = StdDraw.nextKeyTyped();
             while (true) {
                 if (key == ESC_CHAR && avatarName.length() > 0) {
@@ -242,7 +252,9 @@ public class Engine {
                     avatarName += key;
                 }
                 ter.prompt(avatarName, "Enter avatar name (Esc to confirm):");
-                while (!StdDraw.hasNextKeyTyped()) { continue; }
+                while (!StdDraw.hasNextKeyTyped()) {
+                    continue;
+                }
                 key = StdDraw.nextKeyTyped();
             }
         } else if (command == 'q' || command == 'Q') {
@@ -264,7 +276,7 @@ public class Engine {
             Pair<Integer, Integer> avatarPos = new Pair<>(
                     Integer.valueOf(avatarPosStr[0]),
                     Integer.valueOf(avatarPosStr[1]));
-            if (reader.hasNextLine() && avatarName == "default") {
+            if (reader.hasNextLine() && avatarName.equals("default")) {
                 avatarName = reader.readLine();
             }
             return new Pair<>(longSeed, avatarPos);
