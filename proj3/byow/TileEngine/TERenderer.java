@@ -20,6 +20,7 @@ public class TERenderer {
     private int prevMouseX = Integer.MAX_VALUE;
     private int prevMouseY = Integer.MAX_VALUE;
     private TETile hoveredTile = Tileset.NOTHING;
+    private String avatarName = "barry";
 
     /**
      * Same functionality as the other initialization method. The only difference is that the xOff
@@ -106,12 +107,13 @@ public class TERenderer {
         StdDraw.setPenColor(Color.WHITE);
         if ((x != prevMouseX || y != prevMouseY) && y < numYTiles) {
             hoveredTile = world[x][y];
-            StdDraw.textLeft(1, numYTiles - 1, hoveredTile.description());
+            StdDraw.textLeft(1, numYTiles - 2, "hovered tile: " + hoveredTile.description());
             prevMouseX = x;
             prevMouseY = y;
         } else {
-            StdDraw.textLeft(1, numYTiles - 1, hoveredTile.description());
+            StdDraw.textLeft(1, numYTiles - 2, "hovered tile: " + hoveredTile.description());
         }
+        StdDraw.textLeft(1, numYTiles - 1, "player name: " + avatarName);
         StdDraw.show();
     }
 
@@ -124,7 +126,8 @@ public class TERenderer {
         StdDraw.setFont(font);
         StdDraw.text(width/2, 2 * height/3 - height/10, "New Game (N)");
         StdDraw.text(width/2, 2 * height/3 - 3 * height/20, "Load Game (L)");
-        StdDraw.text(width/2, 2 * height/3 - 4 * height/20, "Quit (Q)");
+        StdDraw.text(width/2, 2 * height/3 - 4 * height/20, "Set Avatar Name (C)");
+        StdDraw.text(width/2, 2 * height/3 - 5 * height/20, "Quit (Q)");
         StdDraw.show();
     }
 
@@ -139,5 +142,9 @@ public class TERenderer {
         StdDraw.text(width/2, 4 * height/5, message);
         StdDraw.text(width/2, 2 * height/3 - height/10, seed);
         StdDraw.show();
+    }
+
+    public void setAvatarName(String avatarName) {
+        this.avatarName = avatarName;
     }
 }

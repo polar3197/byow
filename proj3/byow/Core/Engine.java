@@ -8,7 +8,6 @@ import java.awt.*;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -22,6 +21,7 @@ public class Engine {
     public static final int LSHEIGHT = 40;
     public static final String savePath = "./out/production/proj3/last_save.SAV";
     private World world;
+    private String avatarName = "barry";
 
 
     public Engine() {
@@ -38,7 +38,8 @@ public class Engine {
         while (!StdDraw.hasNextKeyTyped()) {}
         long longSeed = menuExec(StdDraw.nextKeyTyped());
         Pair<Long, Pair<Integer, Integer>> loadData = null;
-        while (longSeed == -2 || (longSeed == -3 && loadData == null)) { // -2 indicates an INVALID MENU CHOICE
+        while (longSeed == -2 || (longSeed == -3 && loadData == null)) { // -2 indicates invalid/non-progressing choice
+            ter.loadScreen();
             while (!StdDraw.hasNextKeyTyped()) {}
             longSeed = menuExec(StdDraw.nextKeyTyped());
             if (longSeed == -3) { // user chose LOAD
@@ -49,6 +50,7 @@ public class Engine {
         if (longSeed == -1) { // user chose QUIT
             return;
         }
+        ter.setAvatarName(avatarName);
         World world = new World(longSeed, WIDTH, HEIGHT);
         if (loadData != null) {
             world.createWorld(loadData.b);
@@ -70,7 +72,8 @@ public class Engine {
                     FileWriter saveFile = new FileWriter(savePath);
                     saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
                     Pair<Integer, Integer> avatarPos = world.getAvatarPos();
-                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + String.valueOf(avatarPos.b) + '\n'); // save avatar position
+                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + avatarPos.b + '\n'); // save avatar position
+                    saveFile.write(avatarName);
                     saveFile.close();
                 } catch (IOException e) {
                     System.err.println(e.getLocalizedMessage());
@@ -179,7 +182,7 @@ public class Engine {
                     FileWriter saveFile = new FileWriter(savePath);
                     saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
                     Pair<Integer, Integer> avatarPos = world.getAvatarPos();
-                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + String.valueOf(avatarPos.b) + '\n'); // save avatar position
+                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + avatarPos.b); // save avatar position
                     saveFile.close();
                 } catch (IOException e) {
                     System.err.println(e.getLocalizedMessage());
@@ -189,8 +192,8 @@ public class Engine {
             inputReader.deleteCharAt(0);
         }
         TETile[][] finalWorldFrame = world.getWorld();
-//        ter.initialize(WIDTH, HEIGHT);
-//        ter.renderFrame(finalWorldFrame);
+        ter.initialize(WIDTH, HEIGHT);
+        ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
     }
 
@@ -215,6 +218,25 @@ public class Engine {
             return Long.valueOf(seed);
         } else if (command == 'l' || command == 'L') {
             return -3;
+        } else if (command == 'c' || command == 'C') {
+            avatarName = "";
+            while (!StdDraw.hasNextKeyTyped()) {}
+            char key = StdDraw.nextKeyTyped();
+            while (true) {
+                System.out.println(key);
+                if (key == (char)27 && avatarName.length() > 0) {
+                    return -2;
+                } else if (key == (char)8) {
+                    if (avatarName.length() > 0) {
+                        avatarName = avatarName.substring(0, avatarName.length() - 1);
+                    }
+                } else if (key != ' ') {
+                    avatarName += key;
+                }
+                ter.prompt(avatarName, "Enter avatar name (Esc to confirm):");
+                while (!StdDraw.hasNextKeyTyped()) {}
+                key = StdDraw.nextKeyTyped();
+            }
         } else if (command == 'q' || command == 'Q') {
             StdDraw.clear(new Color(0, 0, 0));
             StdDraw.show();
@@ -230,6 +252,9 @@ public class Engine {
             long longSeed = Long.valueOf(reader.readLine());
             String[] avatarPosStr = reader.readLine().split(" ");
             Pair<Integer, Integer> avatarPos = new Pair<>(Integer.valueOf(avatarPosStr[0]), Integer.valueOf(avatarPosStr[1]));
+            if (reader.hasNextLine()) {
+                avatarName = reader.readLine();
+            }
             return new Pair<>(longSeed, avatarPos);
         } catch (Exception e) {
             System.err.println(e.getLocalizedMessage());
