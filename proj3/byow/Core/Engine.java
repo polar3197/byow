@@ -20,7 +20,7 @@ public class Engine {
 
     public static final int LSWIDTH = 40;
     public static final int LSHEIGHT = 40;
-
+    public static final String savePath = "./out/production/proj3/last_save.SAV";
     private World world;
 
 
@@ -66,7 +66,6 @@ public class Engine {
         while (true) {
             Pair<Integer, Integer> dir = new Pair<Integer, Integer>(0, 0);
             if ((key == 'Q' || key == 'q') && colon) { // save and quit
-                String savePath = "./out/production/proj3/last_save.SAV";
                 try {
                     FileWriter saveFile = new FileWriter(savePath);
                     saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
@@ -133,43 +132,65 @@ public class Engine {
         //
         // See proj3.byow.InputDemo for a demo of how you can make a nice clean interface
         // that works for many different input types.
+        char command = input.charAt(0);
+        if (command == 'q' || command == 'Q') { // user chose QUIT
+            return null;
+        }
+
         StringBuffer seedBuf = new StringBuffer();
-        long seed = Long.MAX_VALUE;
-        String savePath = "./out/production/proj3/last_save.SAV";
-        if (input.charAt(0) == 'N') {
+        long longSeed = Long.MAX_VALUE;
+        if (command == 'N' || command == 'n') {
             int seedLength = 0;
-            while (input.charAt(1 + seedLength) != 'S') {
-                seedBuf.append(input.charAt(1 + seedLength));
+            char nextChar = input.charAt(1 + seedLength);
+            while (nextChar != 'S' && nextChar != 's') {
+                seedBuf.append(nextChar);
                 seedLength++;
+                nextChar = input.charAt(1 + seedLength);
             }
-            seed = Long.valueOf(seedBuf.toString());
-            if (input.substring(input.length() - 2, input.length()).equals(":Q")) { // save world and terminate
+            longSeed = Long.valueOf(seedBuf.toString());
+            world = new World(longSeed, WIDTH, HEIGHT);
+            world.createWorld();
+            input = input.substring(2 + seedLength);
+        } else if (input.charAt(0) == 'L' || input.charAt(0) == 'l') {   // load previous save
+            Pair<Long, Pair<Integer, Integer>> loadData = loadSave();
+            if (loadData == null) return null;
+            world = new World(loadData.a, WIDTH, HEIGHT);
+            world.createWorld(loadData.b);
+            input = input.substring(1);
+        }
+
+        // process movement commands
+        StringBuffer inputReader = new StringBuffer(input);
+        Pair<Integer, Integer> dir = new Pair<>(0, 0);
+        while (!inputReader.isEmpty()) {
+            char key = inputReader.charAt(0);
+            if (key == 'A' || key == 'a') {
+                dir = new Pair<Integer, Integer>(-1, 0);
+            } else if (key == 'S' || key == 's') {
+                dir = new Pair<Integer, Integer>(0, -1);
+            } else if (key == 'W' || key == 'w') {
+                dir = new Pair<Integer, Integer>(0, 1);
+            } else if (key == 'D' || key == 'd') {
+                dir = new Pair<Integer, Integer>(1, 0);
+            } else if (key == ':' &&
+                       inputReader.length() > 1 &&
+                       (inputReader.charAt(1) == 'q' || inputReader.charAt(1) == 'Q')) {
                 try {
                     FileWriter saveFile = new FileWriter(savePath);
-                    saveFile.write(String.valueOf(seed) + '\n');
+                    saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
+                    Pair<Integer, Integer> avatarPos = world.getAvatarPos();
+                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + String.valueOf(avatarPos.b) + '\n'); // save avatar position
                     saveFile.close();
                 } catch (IOException e) {
                     System.err.println(e.getLocalizedMessage());
                 }
             }
-        } else if (input.charAt(0) == 'L') {   // load previous save
-            File saveFile = new File(savePath);
-            if (!saveFile.exists()) {
-                try {
-                    saveFile.createNewFile();
-                } catch (IOException e) {
-                    System.err.println(e.getLocalizedMessage());
-                }
-            }
-            In fileReader = new In(savePath);
-            seed = Long.valueOf(fileReader.readLine().trim());
-            fileReader.close();
+            world.move(dir);
+            inputReader.deleteCharAt(0);
         }
-        world = new World(seed, WIDTH, HEIGHT);
-        world.createWorld();
         TETile[][] finalWorldFrame = world.getWorld();
-        ter.initialize(WIDTH, HEIGHT);
-        ter.renderFrame(finalWorldFrame);
+//        ter.initialize(WIDTH, HEIGHT);
+//        ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
     }
 
