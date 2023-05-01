@@ -20,7 +20,7 @@ public class TERenderer {
     private int prevMouseX = Integer.MAX_VALUE;
     private int prevMouseY = Integer.MAX_VALUE;
     private TETile hoveredTile = Tileset.NOTHING;
-    private String avatarName = "barry";
+    private String avatarName = "default";
 
     /**
      * Same functionality as the other initialization method. The only difference is that the xOff

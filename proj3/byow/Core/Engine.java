@@ -19,9 +19,14 @@ public class Engine {
 
     public static final int LSWIDTH = 40;
     public static final int LSHEIGHT = 40;
-    public static final String savePath = "./out/production/proj3/last_save.SAV";
+    public static final String SAVEPATH = "./last_save.txt";
+    private final int QUIT_FLAG = -1;
+    private final int MENU_FLAG = -2;
+    private final int LOAD_FLAG = -3;
+    private final char ESC_CHAR = (char) 27;
+    private final char BSPACE_CHAR = (char) 8;
     private World world;
-    private String avatarName = "barry";
+    private String avatarName = "default";
 
 
     public Engine() {
@@ -35,23 +40,25 @@ public class Engine {
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
         ter.loadScreen();
-        while (!StdDraw.hasNextKeyTyped()) {}
+        while (!StdDraw.hasNextKeyTyped()) { continue; }
         long longSeed = menuExec(StdDraw.nextKeyTyped());
         Pair<Long, Pair<Integer, Integer>> loadData = null;
-        while (longSeed == -2 || (longSeed == -3 && loadData == null)) { // -2 indicates invalid/non-progressing choice
+        while (longSeed == MENU_FLAG || (longSeed == LOAD_FLAG && loadData == null)) {
             ter.loadScreen();
-            while (!StdDraw.hasNextKeyTyped()) {}
+            while (!StdDraw.hasNextKeyTyped()) { continue; }
             longSeed = menuExec(StdDraw.nextKeyTyped());
-            if (longSeed == -3) { // user chose LOAD
+            if (longSeed == LOAD_FLAG) { // user chose LOAD
                 loadData = loadSave();
-                if (loadData != null) longSeed = loadData.a;
+                if (loadData != null) {
+                    longSeed = loadData.a;
+                }
             }
         }
-        if (longSeed == -1) { // user chose QUIT
+        if (longSeed == QUIT_FLAG) { // user chose QUIT
             return;
         }
         ter.setAvatarName(avatarName);
-        World world = new World(longSeed, WIDTH, HEIGHT);
+        world = new World(longSeed, WIDTH, HEIGHT);
         if (loadData != null) {
             world.createWorld(loadData.b);
         } else {
@@ -69,7 +76,7 @@ public class Engine {
             Pair<Integer, Integer> dir = new Pair<Integer, Integer>(0, 0);
             if ((key == 'Q' || key == 'q') && colon) { // save and quit
                 try {
-                    FileWriter saveFile = new FileWriter(savePath);
+                    FileWriter saveFile = new FileWriter(SAVEPATH);
                     saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
                     Pair<Integer, Integer> avatarPos = world.getAvatarPos();
                     saveFile.write(String.valueOf(avatarPos.a) + ' ' + avatarPos.b + '\n'); // save avatar position
@@ -156,7 +163,9 @@ public class Engine {
             input = input.substring(2 + seedLength);
         } else if (input.charAt(0) == 'L' || input.charAt(0) == 'l') {   // load previous save
             Pair<Long, Pair<Integer, Integer>> loadData = loadSave();
-            if (loadData == null) return null;
+            if (loadData == null) {
+                return null;
+            }
             world = new World(loadData.a, WIDTH, HEIGHT);
             world.createWorld(loadData.b);
             input = input.substring(1);
@@ -175,11 +184,11 @@ public class Engine {
                 dir = new Pair<Integer, Integer>(0, 1);
             } else if (key == 'D' || key == 'd') {
                 dir = new Pair<Integer, Integer>(1, 0);
-            } else if (key == ':' &&
-                       inputReader.length() > 1 &&
-                       (inputReader.charAt(1) == 'q' || inputReader.charAt(1) == 'Q')) {
+            } else if (key == ':'
+                       && inputReader.length() > 1
+                       && (inputReader.charAt(1) == 'q' || inputReader.charAt(1) == 'Q')) {
                 try {
-                    FileWriter saveFile = new FileWriter(savePath);
+                    FileWriter saveFile = new FileWriter(SAVEPATH);
                     saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
                     Pair<Integer, Integer> avatarPos = world.getAvatarPos();
                     saveFile.write(String.valueOf(avatarPos.a) + ' ' + avatarPos.b); // save avatar position
@@ -202,10 +211,10 @@ public class Engine {
         if (command == 'n' || command == 'N') {
             String seed = "";
             ter.prompt(seed, "Enter random seed:");
-            while (!StdDraw.hasNextKeyTyped()) {}
+            while (!StdDraw.hasNextKeyTyped()) { continue; }
             char key = StdDraw.nextKeyTyped();
             while (true) {
-                if ((key == 's' || key == 'S') && seed != "") {
+                if ((key == 's' || key == 'S') && seed.length() != 0) {
                     break;
                 }
                 if ('0' <= key && key <= '9') {
@@ -217,16 +226,15 @@ public class Engine {
             }
             return Long.valueOf(seed);
         } else if (command == 'l' || command == 'L') {
-            return -3;
+            return LOAD_FLAG;
         } else if (command == 'c' || command == 'C') {
             avatarName = "";
-            while (!StdDraw.hasNextKeyTyped()) {}
+            while (!StdDraw.hasNextKeyTyped()) { continue; }
             char key = StdDraw.nextKeyTyped();
             while (true) {
-                System.out.println(key);
-                if (key == (char)27 && avatarName.length() > 0) {
-                    return -2;
-                } else if (key == (char)8) {
+                if (key == ESC_CHAR && avatarName.length() > 0) {
+                    return MENU_FLAG;
+                } else if (key == BSPACE_CHAR) {
                     if (avatarName.length() > 0) {
                         avatarName = avatarName.substring(0, avatarName.length() - 1);
                     }
@@ -234,29 +242,33 @@ public class Engine {
                     avatarName += key;
                 }
                 ter.prompt(avatarName, "Enter avatar name (Esc to confirm):");
-                while (!StdDraw.hasNextKeyTyped()) {}
+                while (!StdDraw.hasNextKeyTyped()) { continue; }
                 key = StdDraw.nextKeyTyped();
             }
         } else if (command == 'q' || command == 'Q') {
             StdDraw.clear(new Color(0, 0, 0));
             StdDraw.show();
-            return -1;
+            return QUIT_FLAG;
         }
-        return -2;
+        return MENU_FLAG;
     }
 
     private Pair<Long, Pair<Integer, Integer>> loadSave() {
-        In reader = new In("./out/production/proj3/last_save.SAV");
-        if (!reader.exists()) return null; // no save file detected
         try {
+            In reader = new In(SAVEPATH);
+            if (!reader.exists()) { // no save file detected
+                return null;
+            }
             long longSeed = Long.valueOf(reader.readLine());
             String[] avatarPosStr = reader.readLine().split(" ");
-            Pair<Integer, Integer> avatarPos = new Pair<>(Integer.valueOf(avatarPosStr[0]), Integer.valueOf(avatarPosStr[1]));
-            if (reader.hasNextLine()) {
+            Pair<Integer, Integer> avatarPos = new Pair<>(
+                    Integer.valueOf(avatarPosStr[0]),
+                    Integer.valueOf(avatarPosStr[1]));
+            if (reader.hasNextLine() && avatarName == "default") {
                 avatarName = reader.readLine();
             }
             return new Pair<>(longSeed, avatarPos);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.err.println(e.getLocalizedMessage());
         }
         return null;
