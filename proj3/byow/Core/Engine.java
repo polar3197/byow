@@ -5,6 +5,7 @@ import byow.TileEngine.TETile;
 import com.github.javaparser.utils.Pair;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import edu.princeton.cs.algs4.In;
