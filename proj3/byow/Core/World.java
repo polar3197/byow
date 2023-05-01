@@ -62,11 +62,33 @@ public class World {
         this.RADIUS_OF_SIGHT = newROS;
     }
 
-    public TETile[][] getWorld() {
-        return world;
+    public void createWorld() {
+        createRooms();
+        Room rm = rooms.get(0);
+        int x = rm.getX();
+        int y = rm.getY();
+        Pair<Integer, Integer> avatarPosition = new Pair<>(x + 1, y + 1);
+        createWorld(avatarPosition);
     }
 
-    public void createWorld() {
+    public void createWorld(Pair<Integer, Integer> avatarPos) {
+        if (rooms.size() == 0) {
+            createRooms();
+        }
+        setAvatarPos(avatarPos);
+        darkWorld = new TETile[worldWidth][worldHeight];
+        for (int i = 0; i < worldWidth; i++) {
+            for (int j = 0; j < worldHeight; j++) {
+                if (abs((i - avatarPos.a)) + abs((j - avatarPos.b)) <= RADIUS_OF_SIGHT && inBounds(i, j)) {
+                    darkWorld[i][j] = world[i][j];
+                } else {
+                    darkWorld[i][j] = Tileset.NOTHING;
+                }
+            }
+        }
+    }
+
+    private void createRooms() {
         // determine number of rooms to make using width & height of world
         for (int i = 0; i < NUM_ROOMS; i++) {
             Room rm = null;
@@ -75,11 +97,6 @@ public class World {
             }
             addRoom2World(rm);
         }
-//        this.roomTree = new RoomTree(rooms.size());
-//        while (!roomTree.fullyConnected()) {
-//            Pair<Integer, Integer> roomPair = roomTree.pickDisjointRooms(this.random);
-//            connectRooms(roomPair.a, roomPair.b, this.random);
-//        }
         Comparator c = new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -93,23 +110,25 @@ public class World {
             connectRooms(i, i + 1, random);
         }
         removeWalls();
-        Room rm = rooms.get(0);
-        int x = rm.getX();
-        int y = rm.getY();
-        avatarPos = new Pair<>(x + 1, y + 1);
-        world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
+    }
 
-        darkWorld = new TETile[worldWidth][worldHeight];
-        for (int i = 0; i < worldWidth; i++) {
-            for (int j = 0; j < worldHeight; j++) {
-                if (abs((i - avatarPos.a)) + abs((j - avatarPos.b)) <= RADIUS_OF_SIGHT && inBounds(i, j)) {
-                    darkWorld[i][j] = world[i][j];
-                } else {
-                    darkWorld[i][j] = Tileset.NOTHING;
-                }
-            }
+    public TETile[][] getWorld() {
+        return world;
+    }
+
+    public Pair<Integer, Integer> getAvatarPos() {
+        return avatarPos;
+    }
+
+    public void setAvatarPos(Pair<Integer, Integer> avatarPos) {
+        if (world[avatarPos.a][avatarPos.b] != Tileset.FLOOR) {
+            return;
         }
-        return;
+        if (this.avatarPos != null) {
+            world[this.avatarPos.a][this.avatarPos.b] = Tileset.FLOOR;
+        }
+        this.avatarPos = avatarPos;
+        world[avatarPos.a][avatarPos.b] = Tileset.AVATAR;
     }
 
     public Pair<Integer, Integer> addPairs(Pair<Integer, Integer> first, Pair<Integer, Integer> second) {

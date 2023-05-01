@@ -5,9 +5,7 @@ import byow.TileEngine.TETile;
 import com.github.javaparser.utils.Pair;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.util.ArrayList;
-import java.util.Scanner;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import java.io.File;
@@ -23,7 +21,6 @@ public class Engine {
     public static final int LSWIDTH = 40;
     public static final int LSHEIGHT = 40;
 
-    private MouseAdapter mouseAdapter;
     private World world;
 
 
@@ -40,15 +37,24 @@ public class Engine {
         ter.loadScreen();
         while (!StdDraw.hasNextKeyTyped()) {}
         long longSeed = menuExec(StdDraw.nextKeyTyped());
-        while (longSeed == -2) { // -2 indicates an INVALID MENU CHOICE
+        Pair<Long, Pair<Integer, Integer>> loadData = null;
+        while (longSeed == -2 || (longSeed == -3 && loadData == null)) { // -2 indicates an INVALID MENU CHOICE
             while (!StdDraw.hasNextKeyTyped()) {}
             longSeed = menuExec(StdDraw.nextKeyTyped());
+            if (longSeed == -3) { // user chose LOAD
+                loadData = loadSave();
+                if (loadData != null) longSeed = loadData.a;
+            }
         }
         if (longSeed == -1) { // user chose QUIT
             return;
         }
         World world = new World(longSeed, WIDTH, HEIGHT);
-        world.createWorld();
+        if (loadData != null) {
+            world.createWorld(loadData.b);
+        } else {
+            world.createWorld();
+        }
         boolean light = false;
         ter.initialize(WIDTH, HEIGHT);
 
@@ -59,7 +65,17 @@ public class Engine {
         char key = StdDraw.nextKeyTyped();
         while (true) {
             Pair<Integer, Integer> dir = new Pair<Integer, Integer>(0, 0);
-            if ((key == 'Q' || key == 'q') && colon) {
+            if ((key == 'Q' || key == 'q') && colon) { // save and quit
+                String savePath = "./out/production/proj3/last_save.SAV";
+                try {
+                    FileWriter saveFile = new FileWriter(savePath);
+                    saveFile.write(String.valueOf(longSeed) + '\n'); // save seed
+                    Pair<Integer, Integer> avatarPos = world.getAvatarPos();
+                    saveFile.write(String.valueOf(avatarPos.a) + ' ' + String.valueOf(avatarPos.b) + '\n'); // save avatar position
+                    saveFile.close();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
                 break;
             }
             colon = false;
@@ -87,41 +103,6 @@ public class Engine {
         }
         ter.initialize(LSWIDTH, LSHEIGHT);
         ter.prompt("Game Over");
-    }
-
-    // returns seed (-1 if command is QUIT)
-    public long menuExec(char command) {
-        if (command == 'n' || command == 'N') {
-            String seed = "";
-            ter.prompt(seed, "Enter random seed:");
-            while (!StdDraw.hasNextKeyTyped()) {}
-            char key = StdDraw.nextKeyTyped();
-            while (true) {
-                if ((key == 's' || key == 'S') && seed != "") {
-                    break;
-                }
-                if ('0' <= key && key <= '9') {
-                    seed += key;
-                }
-                ter.prompt(seed, "Enter random seed:");
-                while (!StdDraw.hasNextKeyTyped()) {}
-                key = StdDraw.nextKeyTyped();
-            }
-            return Long.valueOf(seed);
-        } else if (command == 'l' || command == 'L') {
-            // TODO: load player position
-            In reader = new In("./out/production/proj3/last_save.SAV");
-            if (reader.hasNextLine()) {
-
-            }
-
-            // return loaded seed;
-        } else if (command == 'q' || command == 'Q') {
-            StdDraw.clear(new Color(0, 0, 0));
-            StdDraw.show();
-            return -1;
-        }
-        return -2;
     }
 
     /**
@@ -190,5 +171,48 @@ public class Engine {
         ter.initialize(WIDTH, HEIGHT);
         ter.renderFrame(finalWorldFrame);
         return finalWorldFrame;
+    }
+
+    // returns seed (-1 if command is QUIT, -3 if LOAD)
+    public long menuExec(char command) {
+        if (command == 'n' || command == 'N') {
+            String seed = "";
+            ter.prompt(seed, "Enter random seed:");
+            while (!StdDraw.hasNextKeyTyped()) {}
+            char key = StdDraw.nextKeyTyped();
+            while (true) {
+                if ((key == 's' || key == 'S') && seed != "") {
+                    break;
+                }
+                if ('0' <= key && key <= '9') {
+                    seed += key;
+                }
+                ter.prompt(seed, "Enter random seed:");
+                while (!StdDraw.hasNextKeyTyped()) {}
+                key = StdDraw.nextKeyTyped();
+            }
+            return Long.valueOf(seed);
+        } else if (command == 'l' || command == 'L') {
+            return -3;
+        } else if (command == 'q' || command == 'Q') {
+            StdDraw.clear(new Color(0, 0, 0));
+            StdDraw.show();
+            return -1;
+        }
+        return -2;
+    }
+
+    private Pair<Long, Pair<Integer, Integer>> loadSave() {
+        In reader = new In("./out/production/proj3/last_save.SAV");
+        if (!reader.exists()) return null; // no save file detected
+        try {
+            long longSeed = Long.valueOf(reader.readLine());
+            String[] avatarPosStr = reader.readLine().split(" ");
+            Pair<Integer, Integer> avatarPos = new Pair<>(Integer.valueOf(avatarPosStr[0]), Integer.valueOf(avatarPosStr[1]));
+            return new Pair<>(longSeed, avatarPos);
+        } catch (Exception e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+        return null;
     }
 }
