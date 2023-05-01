@@ -37,7 +37,7 @@ public class Engine {
      */
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
-//        ter.loadScreen();
+        ter.loadScreen();
         while (!StdDraw.hasNextKeyTyped()) {}
         long longSeed = menuExec(StdDraw.nextKeyTyped());
         while (longSeed == -2) { // -2 indicates an INVALID MENU CHOICE
@@ -50,12 +50,12 @@ public class Engine {
         World world = new World(longSeed, WIDTH, HEIGHT);
         world.createWorld();
         boolean light = false;
-        TETile[][] finalWorldFrame = world.getWorld(light);
         ter.initialize(WIDTH, HEIGHT);
-        ter.renderFrame(finalWorldFrame);
 
         boolean colon = false;
-        while (!StdDraw.hasNextKeyTyped()) {}
+        while (!StdDraw.hasNextKeyTyped()) {
+            ter.renderFrame(world.getWorld(light));
+        }
         char key = StdDraw.nextKeyTyped();
         while (true) {
             Pair<Integer, Integer> dir = new Pair<Integer, Integer>(0, 0);
@@ -80,17 +80,20 @@ public class Engine {
             if (world.move(dir)) {
                 ter.renderFrame(world.getWorld(light));
             }
-            while (!StdDraw.hasNextKeyTyped()) {}
+            while (!StdDraw.hasNextKeyTyped()) {
+                ter.renderFrame(world.getWorld(light));
+            }
             key = StdDraw.nextKeyTyped();
         }
-//        ter.prompt("Game Over");
+        ter.initialize(LSWIDTH, LSHEIGHT);
+        ter.prompt("Game Over");
     }
 
     // returns seed (-1 if command is QUIT)
     public long menuExec(char command) {
         if (command == 'n' || command == 'N') {
             String seed = "";
-//            ter.prompt(seed, "Enter random seed:");
+            ter.prompt(seed, "Enter random seed:");
             while (!StdDraw.hasNextKeyTyped()) {}
             char key = StdDraw.nextKeyTyped();
             while (true) {
@@ -100,7 +103,7 @@ public class Engine {
                 if ('0' <= key && key <= '9') {
                     seed += key;
                 }
-//                ter.prompt(seed, "Enter random seed:");
+                ter.prompt(seed, "Enter random seed:");
                 while (!StdDraw.hasNextKeyTyped()) {}
                 key = StdDraw.nextKeyTyped();
             }
