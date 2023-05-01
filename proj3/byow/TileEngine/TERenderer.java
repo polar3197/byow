@@ -114,4 +114,30 @@ public class TERenderer {
         }
         StdDraw.show();
     }
+
+    public void loadScreen() {
+        Font font = new Font("Monaco", Font.BOLD, 50);
+        StdDraw.setFont(font);
+        StdDraw.clear(new Color(255, 255, 255));
+        StdDraw.text(width/2, 4 * height/5, "Endless Wandering");
+        font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.text(width/2, 2 * height/3 - height/10, "New Game (N)");
+        StdDraw.text(width/2, 2 * height/3 - 3 * height/20, "Load Game (L)");
+        StdDraw.text(width/2, 2 * height/3 - 4 * height/20, "Quit (Q)");
+        StdDraw.show();
+    }
+
+    public void prompt(String message) {
+        prompt("", message);
+    }
+
+    public void prompt(String seed, String message) {
+        Font font = new Font("Monaco", Font.BOLD, 30);
+        StdDraw.setFont(font);
+        StdDraw.clear(new Color(255, 255, 255));
+        StdDraw.text(width/2, 4 * height/5, message);
+        StdDraw.text(width/2, 2 * height/3 - height/10, seed);
+        StdDraw.show();
+    }
 }
