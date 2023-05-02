@@ -14,6 +14,7 @@ import java.io.IOException;
 public class Engine {
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
+    public static final int WHITE = 255;
     public static final int WIDTH = 80;
     public static final int HEIGHT = 30;
 
@@ -39,11 +40,7 @@ public class Engine {
      */
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
-//        ter.loadScreen();
-//        while (!StdDraw.hasNextKeyTyped()) {
-//            continue;
-//        }
-        long longSeed = -2; // menuExec(StdDraw.nextKeyTyped());
+        long longSeed = MENU_FLAG; // menuExec(StdDraw.nextKeyTyped());
         Pair<Long, Pair<Integer, Integer>> loadData = null;
         while (longSeed == MENU_FLAG || (longSeed == LOAD_FLAG && loadData == null)) {
             ter.loadScreen();
@@ -253,7 +250,7 @@ public class Engine {
                 }
             }
         } else if (command == 'q' || command == 'Q') {
-            StdDraw.clear(new Color(255, 255, 255));
+            StdDraw.clear(new Color(WHITE, WHITE, WHITE));
             StdDraw.show();
             return QUIT_FLAG;
         }
