@@ -90,7 +90,7 @@ public class TERenderer {
     public void renderFrame(TETile[][] world) {
         int numXTiles = world.length;
         int numYTiles = world[0].length;
-        StdDraw.clear(new Color(255, 255, 255));
+//        StdDraw.clear(new Color(255, 255, 255));
 
         for (int x = 0; x < numXTiles; x += 1) {
             for (int y = 0; y < numYTiles; y += 1) {
@@ -101,7 +101,7 @@ public class TERenderer {
                 world[x][y].draw(x + xOffset, y + yOffset);
             }
         }
-        StdDraw.filledRectangle(3, numYTiles, 3, 1);
+//        StdDraw.filledRectangle(3, numYTiles, 3, 1);
         int x = (int) StdDraw.mouseX();
         int y = (int) StdDraw.mouseY();
         StdDraw.setPenColor(Color.WHITE);

@@ -39,11 +39,11 @@ public class Engine {
      */
     public void interactWithKeyboard() {
         ter.initialize(LSWIDTH, LSHEIGHT);
-        ter.loadScreen();
-        while (!StdDraw.hasNextKeyTyped()) {
-            continue;
-        }
-        long longSeed = menuExec(StdDraw.nextKeyTyped());
+//        ter.loadScreen();
+//        while (!StdDraw.hasNextKeyTyped()) {
+//            continue;
+//        }
+        long longSeed = -2; // menuExec(StdDraw.nextKeyTyped());
         Pair<Long, Pair<Integer, Integer>> loadData = null;
         while (longSeed == MENU_FLAG || (longSeed == LOAD_FLAG && loadData == null)) {
             ter.loadScreen();
@@ -235,11 +235,13 @@ public class Engine {
             return LOAD_FLAG;
         } else if (command == 'c' || command == 'C') {
             avatarName = "";
-            while (!StdDraw.hasNextKeyTyped()) {
-                continue;
-            }
-            char key = StdDraw.nextKeyTyped();
+            char key = ' ';
             while (true) {
+                ter.prompt(avatarName, "Enter avatar name (Esc to confirm):");
+                while (!StdDraw.hasNextKeyTyped()) {
+                    continue;
+                }
+                key = StdDraw.nextKeyTyped();
                 if (key == ESC_CHAR && avatarName.length() > 0) {
                     return MENU_FLAG;
                 } else if (key == BSPACE_CHAR) {
@@ -249,11 +251,6 @@ public class Engine {
                 } else if (key != ' ') {
                     avatarName += key;
                 }
-                ter.prompt(avatarName, "Enter avatar name (Esc to confirm):");
-                while (!StdDraw.hasNextKeyTyped()) {
-                    continue;
-                }
-                key = StdDraw.nextKeyTyped();
             }
         } else if (command == 'q' || command == 'Q') {
             StdDraw.clear(new Color(255, 255, 255));
