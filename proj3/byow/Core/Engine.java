@@ -30,7 +30,7 @@ public class Engine {
 
 
     public Engine() {
-        System.out.println("Engine constructor called");
+        /*System.out.println("Engine constructor called");*/
     }
 
     /**
@@ -114,8 +114,6 @@ public class Engine {
             }
             key = StdDraw.nextKeyTyped();
         }
-        ter.initialize(LSWIDTH, LSHEIGHT);
-        ter.prompt("Game Over");
     }
 
     /**
@@ -258,7 +256,7 @@ public class Engine {
                 key = StdDraw.nextKeyTyped();
             }
         } else if (command == 'q' || command == 'Q') {
-            StdDraw.clear(new Color(0, 0, 0));
+            StdDraw.clear(new Color(255, 255, 255));
             StdDraw.show();
             return QUIT_FLAG;
         }
