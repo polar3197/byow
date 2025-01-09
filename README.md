@@ -4,6 +4,15 @@
 
 **Partner 2:** Charlie Cooper
 
+## Setup
+1. Navigate to root and run 'java -cp "lib/algs4.jar:lib/javaparser-core-3.24.0.jar:." byow.Core.Main'
+
+## How To Use
+1. Use keys to select menu options 
+2. To sumbit a seed value press 's' or 'S'
+3. To save your map and quit the program while it is running, press ":q" or ":Q"
+4. To remove fog-of-war effect, press "o" or "O"
+
 ## Classes and Data Structures
 
 World {  
@@ -20,17 +29,6 @@ RoomTree {
   
 }  
   
-<!-- Chunk {  
-  private size # the length of a "wall" of the chunk  
-  private coordinates # bottom left corner  
-  private TETile[][]  
-  private Room roomTree  
-    
-  public populateTree() # populate tree with rooms and hallways  
-  public connect(Chunk)  
-  public addWalls() # transforms floors with empty neighboring tiles to walls  
-}   -->
-  
 Room {  
   private width, height  
   private coordinates  
@@ -41,7 +39,3 @@ Room {
   public bool detectOverlap(TETile[][] map)
 }  
   
-## Algorithms
-
-
-## Persistence
